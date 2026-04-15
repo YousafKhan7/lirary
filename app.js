@@ -17,6 +17,7 @@ const elements = {
   loggedInOnly: document.querySelectorAll(".logged-in-only"),
   accessNote: document.getElementById("accessNote"),
   registrationHelp: document.getElementById("registrationHelp"),
+  monthlyStudentNote: document.getElementById("monthlyStudentNote"),
   reportMonth: document.getElementById("reportMonth"),
   monthLabel: document.getElementById("monthLabel"),
   studentForm: document.getElementById("studentForm"),
@@ -24,6 +25,7 @@ const elements = {
   expenseForm: document.getElementById("expenseForm"),
   expenseSubmitButton: document.querySelector('#expenseForm button[type="submit"]'),
   studentTableBody: document.getElementById("studentTableBody"),
+  allStudentTableBody: document.getElementById("allStudentTableBody"),
   expenseTableBody: document.getElementById("expenseTableBody"),
   monthlyBreakdownNote: document.getElementById("monthlyBreakdownNote"),
   totalStudents: document.getElementById("totalStudents"),
@@ -42,6 +44,7 @@ const elements = {
   adminOnlySections: document.querySelectorAll(".admin-only"),
   adminRegistrationOnlyFields: document.querySelectorAll(".admin-registration-only"),
   studentRowTemplate: document.getElementById("studentRowTemplate"),
+  allStudentRowTemplate: document.getElementById("allStudentRowTemplate"),
   joinDate: document.getElementById("joinDate"),
   feeMonth: document.getElementById("feeMonth"),
   feeStatus: document.getElementById("feeStatus"),
@@ -253,13 +256,12 @@ async function refreshPortalData(options = {}) {
       ? supabaseClient
           .from("fee_payments")
           .select("id, student_id, fee_month, amount, status, created_at")
-          .eq("fee_month", toDbMonthDate(state.selectedMonth))
+          .order("fee_month", { ascending: false })
       : Promise.resolve({ data: [], error: null }),
     state.role === "admin"
       ? supabaseClient
           .from("expenses")
           .select("id, title, expense_month, amount, created_at")
-          .eq("expense_month", toDbMonthDate(state.selectedMonth))
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null }),
   ]);
@@ -438,6 +440,7 @@ function render() {
   renderRole();
   renderSummary();
   renderStudents();
+  renderAllStudents();
   renderExpenses();
 }
 
@@ -473,27 +476,34 @@ function renderRole() {
 }
 
 function renderSummary() {
-  const monthlyStats = getMonthlyStats();
+  const overallStats = getOverallStats();
 
-  elements.totalStudents.textContent = String(state.students.length);
-  elements.paidStudents.textContent = String(monthlyStats.paidCount);
-  elements.pendingStudents.textContent = String(Math.max(state.students.length - monthlyStats.paidCount, 0));
-  elements.monthlyIncome.textContent = formatCurrency(monthlyStats.income);
-  elements.monthlyExpense.textContent = formatCurrency(monthlyStats.expenses);
-  elements.monthlyProfit.textContent = formatCurrency(monthlyStats.result);
-  elements.monthLabel.textContent = `Showing numbers for ${formatMonthLabel(state.selectedMonth)}`;
+  elements.totalStudents.textContent = String(overallStats.totalStudents);
+  elements.paidStudents.textContent = String(overallStats.activeCount);
+  elements.pendingStudents.textContent = String(overallStats.enrolledCount);
+  elements.monthlyIncome.textContent = formatCurrency(overallStats.income);
+  elements.monthlyExpense.textContent = formatCurrency(overallStats.expenses);
+  elements.monthlyProfit.textContent = formatCurrency(overallStats.result);
+  elements.monthLabel.textContent = `Overall totals with monthly filter set to ${formatMonthLabel(
+    state.selectedMonth,
+  )}`;
 }
 
 function renderStudents() {
-  if (state.students.length === 0) {
+  const visibleStudents = getVisibleStudentsForSelectedMonth();
+  elements.monthlyStudentNote.textContent = `Students who joined on or before ${formatMonthLabel(
+    state.selectedMonth,
+  )} appear here. Students from later months stay hidden.`;
+
+  if (visibleStudents.length === 0) {
     elements.studentTableBody.innerHTML =
-      '<tr><td colspan="7" class="empty-state">No students registered yet.</td></tr>';
+      '<tr><td colspan="7" class="empty-state">No students available for this selected month yet.</td></tr>';
     return;
   }
 
   const fragment = document.createDocumentFragment();
 
-  state.students.forEach((student) => {
+  visibleStudents.forEach((student) => {
     const payment = getPayment(student.id);
     const row = elements.studentRowTemplate.content.firstElementChild.cloneNode(true);
 
@@ -533,6 +543,7 @@ function renderStudents() {
 
 function renderExpenses() {
   const monthlyStats = getMonthlyStats();
+  const selectedMonthExpenses = getSelectedMonthExpenses();
   const hasProfit = monthlyStats.result >= 0;
 
   elements.monthlyBreakdownNote.textContent = `Full breakdown for ${formatMonthLabel(state.selectedMonth)}.`;
@@ -546,7 +557,7 @@ function renderExpenses() {
     ? "Selected month finished above expenses."
     : "Selected month expenses are higher than collected fees.";
 
-  if (state.expenses.length === 0) {
+  if (selectedMonthExpenses.length === 0) {
     elements.expenseTableBody.innerHTML =
       '<tr><td colspan="3" class="empty-state">No expenses recorded for this month.</td></tr>';
     return;
@@ -554,7 +565,7 @@ function renderExpenses() {
 
   const fragment = document.createDocumentFragment();
 
-  state.expenses.forEach((entry) => {
+  selectedMonthExpenses.forEach((entry) => {
     const row = document.createElement("tr");
     const titleCell = document.createElement("td");
     const monthCell = document.createElement("td");
@@ -572,6 +583,32 @@ function renderExpenses() {
   elements.expenseTableBody.appendChild(fragment);
 }
 
+function renderAllStudents() {
+  if (state.students.length === 0) {
+    elements.allStudentTableBody.innerHTML =
+      '<tr><td colspan="6" class="empty-state">No students registered yet.</td></tr>';
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  state.students.forEach((student) => {
+    const row = elements.allStudentRowTemplate.content.firstElementChild.cloneNode(true);
+
+    row.querySelector('[data-field="id"]').textContent = student.student_code || `STD-${student.id}`;
+    row.querySelector('[data-field="name"]').textContent = student.full_name;
+    row.querySelector('[data-field="course"]').textContent = student.course;
+    row.querySelector('[data-field="phone"]').textContent = student.phone || "-";
+    row.querySelector('[data-field="joinDate"]').textContent = formatDate(student.join_date);
+    row.querySelector('[data-field="monthlyFee"]').textContent = formatCurrency(student.monthly_fee);
+
+    fragment.appendChild(row);
+  });
+
+  elements.allStudentTableBody.innerHTML = "";
+  elements.allStudentTableBody.appendChild(fragment);
+}
+
 function resetPortalState() {
   state.session = null;
   state.user = null;
@@ -586,10 +623,10 @@ function resetPortalData() {
 }
 
 function getMonthlyStats() {
-  const paidPayments = state.payments.filter((entry) => entry.status === "paid");
+  const paidPayments = getSelectedMonthPayments().filter((entry) => entry.status === "paid");
   const income = paidPayments.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
-  const expenses = state.expenses.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
-  const enrolledCount = state.students.filter((student) => isSameMonth(student.join_date, state.selectedMonth)).length;
+  const expenses = getSelectedMonthExpenses().reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+  const enrolledCount = getEnrolledStudentsForSelectedMonth().length;
 
   return {
     paidCount: paidPayments.length,
@@ -600,8 +637,44 @@ function getMonthlyStats() {
   };
 }
 
+function getOverallStats() {
+  const paidPayments = state.payments.filter((entry) => entry.status === "paid");
+  const income = paidPayments.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+  const expenses = state.expenses.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+
+  return {
+    totalStudents: state.students.length,
+    activeCount: getVisibleStudentsForSelectedMonth().length,
+    enrolledCount: getEnrolledStudentsForSelectedMonth().length,
+    income,
+    expenses,
+    result: income - expenses,
+  };
+}
+
+function getVisibleStudentsForSelectedMonth() {
+  return state.students.filter((student) => joinedOnOrBeforeMonth(student.join_date, state.selectedMonth));
+}
+
+function getEnrolledStudentsForSelectedMonth() {
+  return state.students.filter((student) => isSameMonth(student.join_date, state.selectedMonth));
+}
+
+function getSelectedMonthPayments() {
+  return state.payments.filter((entry) => fromDbMonthDate(entry.fee_month) === state.selectedMonth);
+}
+
+function getSelectedMonthExpenses() {
+  return state.expenses.filter((entry) => fromDbMonthDate(entry.expense_month) === state.selectedMonth);
+}
+
 function getPayment(studentId) {
-  return state.payments.find((entry) => String(entry.student_id) === String(studentId)) || null;
+  return (
+    state.payments.find(
+      (entry) =>
+        String(entry.student_id) === String(studentId) && fromDbMonthDate(entry.fee_month) === state.selectedMonth,
+    ) || null
+  );
 }
 
 function setButtonBusy(button, isBusy, busyLabel) {
@@ -648,6 +721,14 @@ function isSameMonth(dateValue, monthValue) {
   return String(dateValue).slice(0, 7) === monthValue;
 }
 
+function joinedOnOrBeforeMonth(dateValue, monthValue) {
+  if (!dateValue || !monthValue) {
+    return false;
+  }
+
+  return String(dateValue).slice(0, 7) <= monthValue;
+}
+
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-PK", {
     style: "currency",
@@ -675,4 +756,16 @@ function formatMonthValue(date) {
 
 function capitalize(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) {
+    return "-";
+  }
+
+  return new Date(dateValue).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

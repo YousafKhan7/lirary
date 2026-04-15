@@ -26,10 +26,7 @@
         </div>
         <p class="eyebrow">Library Admin Portal</p>
         <h1>Simple student registration, fee tracking, and monthly profit in one screen.</h1>
-        <p class="hero-text">
-          This version uses Supabase for real login, cloud storage, and role-based access for
-          admin and manager accounts.
-        </p>
+      
 
         <div class="hero-chips">
           <span class="hero-chip">Student Records</span>
@@ -91,41 +88,41 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Overview</p>
-            <h2>Monthly snapshot</h2>
+            <h2>Overall dashboard</h2>
           </div>
           <p class="section-note" id="monthLabel"></p>
         </div>
 
         <div class="stats-grid">
           <article class="stat-card">
-            <span>Total students</span>
+            <span>Total students overall</span>
             <strong id="totalStudents">0</strong>
-            <small>Registered in the system</small>
+            <small>All students registered in the system</small>
           </article>
           <article class="stat-card">
-            <span>Fees paid</span>
+            <span>Students active in month</span>
             <strong id="paidStudents">0</strong>
-            <small>Students marked paid this month</small>
+            <small>Students who had already joined by the selected month</small>
           </article>
           <article class="stat-card">
-            <span>Pending fees</span>
+            <span>Students enrolled in month</span>
             <strong id="pendingStudents">0</strong>
-            <small>Students still unpaid this month</small>
+            <small>Students whose join date falls in the selected month</small>
           </article>
           <article class="stat-card accent">
-            <span>Monthly profit</span>
+            <span>Overall profit / loss</span>
             <strong id="monthlyProfit">PKR 0</strong>
-            <small>Income minus expenses</small>
+            <small>All-time collected fees minus all-time expenses</small>
           </article>
         </div>
 
         <div class="finance-strip">
           <article>
-            <span>Income</span>
+            <span>Total fee paid overall</span>
             <strong id="monthlyIncome">PKR 0</strong>
           </article>
           <article>
-            <span>Expenses</span>
+            <span>Total expenses overall</span>
             <strong id="monthlyExpense">PKR 0</strong>
           </article>
         </div>
@@ -218,7 +215,7 @@
         </form>
       </section>
 
-      <section class="card admin-only" id="expenseTableSection">
+      <section class="card wide-card admin-only" id="expenseTableSection">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Monthly Details</p>
@@ -272,9 +269,11 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Students</p>
-            <h2>Registered students and fee status</h2>
+            <h2>Students visible in selected month</h2>
           </div>
-          <p class="section-note">Admin can update fee status. Manager can only register students.</p>
+          <p class="section-note" id="monthlyStudentNote">
+            Students appear here only if they had already joined by the selected month.
+          </p>
         </div>
 
         <div class="table-wrap">
@@ -292,7 +291,37 @@
             </thead>
             <tbody id="studentTableBody">
               <tr>
-                <td colspan="7" class="empty-state">No students registered yet.</td>
+                <td colspan="7" class="empty-state">No students available for this month yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card students-card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">All Students</p>
+            <h2>Total registered student list</h2>
+          </div>
+          <p class="section-note">This list shows every student ever registered in the portal.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Phone</th>
+                <th>Join date</th>
+                <th>Monthly fee</th>
+              </tr>
+            </thead>
+            <tbody id="allStudentTableBody">
+              <tr>
+                <td colspan="6" class="empty-state">No students registered yet.</td>
               </tr>
             </tbody>
           </table>
@@ -310,6 +339,17 @@
       <td data-field="monthlyFee"></td>
       <td data-field="status"></td>
       <td data-field="action"></td>
+    </tr>
+  </template>
+
+  <template id="allStudentRowTemplate">
+    <tr>
+      <td data-field="id"></td>
+      <td data-field="name"></td>
+      <td data-field="course"></td>
+      <td data-field="phone"></td>
+      <td data-field="joinDate"></td>
+      <td data-field="monthlyFee"></td>
     </tr>
   </template>
 

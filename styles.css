@@ -317,6 +317,10 @@ select {
   grid-column: span 6;
 }
 
+.wide-card {
+  grid-column: 1 / -1;
+}
+
 .students-card {
   grid-column: 1 / -1;
 }

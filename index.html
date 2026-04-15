@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Library Admin Portal</p>
+        <h1>Simple student registration, fee tracking, and monthly profit in one screen.</h1>
+        <p class="hero-text">
+          This version uses Supabase for real login, cloud storage, and role-based access for
+          admin and manager accounts.
+        </p>
+      </div>
+
+      <div class="hero-panel">
+        <div id="appMessage" class="app-message is-hidden" role="status" aria-live="polite"></div>
+
+        <form id="loginForm" class="auth-form">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Sign In</p>
+              <h2>Access the portal</h2>
+            </div>
+            <p class="section-note">Use the admin or manager account from Supabase Auth.</p>
+          </div>
+
+          <label class="input-group">
+            <span>Email</span>
+            <input id="loginEmail" name="loginEmail" type="email" placeholder="admin@lirary.com" required />
+          </label>
+
+          <label class="input-group">
+            <span>Password</span>
+            <input id="loginPassword" name="loginPassword" type="password" placeholder="Enter password" required />
+          </label>
+
+          <button class="primary-btn" id="loginButton" type="submit">Sign in</button>
+        </form>
+
+        <div id="sessionCard" class="session-card is-hidden">
+          <div>
+            <span class="session-label">Signed in as</span>
+            <strong id="sessionEmail">-</strong>
+            <p class="section-note" id="sessionRoleLabel">Role: -</p>
+          </div>
+          <button class="ghost-btn" id="logoutButton" type="button">Log out</button>
+        </div>
+
+        <label class="input-group compact logged-in-only is-hidden">
+          <span>Monthly report</span>
+          <input id="reportMonth" name="reportMonth" type="month" />
+        </label>
+
+        <div class="access-note logged-in-only is-hidden" id="accessNote"></div>
+        <p class="storage-note">Storage mode: Supabase cloud database with email/password login.</p>
+      </div>
+    </header>
+
+    <section id="authGate" class="auth-gate">
+      <p id="authGateText">Sign in to open the library portal.</p>
+    </section>
+
+    <main id="appLayout" class="layout is-hidden">
+      <section class="summary-panel admin-only">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Overview</p>
+            <h2>Monthly snapshot</h2>
+          </div>
+          <p class="section-note" id="monthLabel"></p>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span>Total students</span>
+            <strong id="totalStudents">0</strong>
+            <small>Registered in the system</small>
+          </article>
+          <article class="stat-card">
+            <span>Fees paid</span>
+            <strong id="paidStudents">0</strong>
+            <small>Students marked paid this month</small>
+          </article>
+          <article class="stat-card">
+            <span>Pending fees</span>
+            <strong id="pendingStudents">0</strong>
+            <small>Students still unpaid this month</small>
+          </article>
+          <article class="stat-card accent">
+            <span>Monthly profit</span>
+            <strong id="monthlyProfit">PKR 0</strong>
+            <small>Income minus expenses</small>
+          </article>
+        </div>
+
+        <div class="finance-strip">
+          <article>
+            <span>Income</span>
+            <strong id="monthlyIncome">PKR 0</strong>
+          </article>
+          <article>
+            <span>Expenses</span>
+            <strong id="monthlyExpense">PKR 0</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="studentFormTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Registration</p>
+            <h2 id="studentFormTitle">Register a student</h2>
+          </div>
+          <p class="section-note" id="registrationHelp">Admin and manager can register students.</p>
+        </div>
+
+        <form id="studentForm" class="form-grid">
+          <label class="input-group">
+            <span>Student name</span>
+            <input id="studentName" name="studentName" type="text" placeholder="Ayesha Khan" required />
+          </label>
+
+          <label class="input-group">
+            <span>Phone number</span>
+            <input id="studentPhone" name="studentPhone" type="tel" placeholder="03xx-xxxxxxx" required />
+          </label>
+
+          <label class="input-group">
+            <span>Course / class</span>
+            <input id="studentCourse" name="studentCourse" type="text" placeholder="CSS, English, FSC" required />
+          </label>
+
+          <label class="input-group">
+            <span>Monthly fee</span>
+            <input id="studentFee" name="studentFee" type="number" min="0" step="1" placeholder="5000" required />
+          </label>
+
+          <label class="input-group">
+            <span>Join date</span>
+            <input id="joinDate" name="joinDate" type="date" required />
+          </label>
+
+          <label class="input-group admin-registration-only">
+            <span>Fee month</span>
+            <input id="feeMonth" name="feeMonth" type="month" required />
+          </label>
+
+          <label class="input-group admin-registration-only">
+            <span>Fee status</span>
+            <select id="feeStatus" name="feeStatus" required>
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+            </select>
+          </label>
+
+          <div class="form-actions">
+            <button class="primary-btn" type="submit">Register student</button>
+            <p class="helper-text">A unique student ID is generated automatically.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="card admin-only" id="expensesSection" aria-labelledby="expenseFormTitle">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Admin Finance</p>
+            <h2 id="expenseFormTitle">Record a monthly expense</h2>
+          </div>
+          <p class="section-note">Only the admin can manage expenses and profit.</p>
+        </div>
+
+        <form id="expenseForm" class="form-grid compact-grid">
+          <label class="input-group">
+            <span>Expense title</span>
+            <input id="expenseTitle" name="expenseTitle" type="text" placeholder="Electricity bill" required />
+          </label>
+
+          <label class="input-group">
+            <span>Amount</span>
+            <input id="expenseAmount" name="expenseAmount" type="number" min="0" step="1" placeholder="12000" required />
+          </label>
+
+          <label class="input-group">
+            <span>Expense month</span>
+            <input id="expenseMonth" name="expenseMonth" type="month" required />
+          </label>
+
+          <div class="form-actions">
+            <button class="primary-btn alt" type="submit">Save expense</button>
+            <p class="helper-text">Monthly profit is calculated automatically.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="card admin-only" id="expenseTableSection">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Expense Ledger</p>
+            <h2>Expenses for selected month</h2>
+          </div>
+          <p class="section-note">Visible only to admin.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Month</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="expenseTableBody">
+              <tr>
+                <td colspan="3" class="empty-state">No expenses recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card students-card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Students</p>
+            <h2>Registered students and fee status</h2>
+          </div>
+          <p class="section-note">Admin can update fee status. Manager can only register students.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Phone</th>
+                <th>Monthly fee</th>
+                <th>Fee status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody">
+              <tr>
+                <td colspan="7" class="empty-state">No students registered yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="studentRowTemplate">
+    <tr>
+      <td data-field="id"></td>
+      <td data-field="name"></td>
+      <td data-field="course"></td>
+      <td data-field="phone"></td>
+      <td data-field="monthlyFee"></td>
+      <td data-field="status"></td>
+      <td data-field="action"></td>
+    </tr>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

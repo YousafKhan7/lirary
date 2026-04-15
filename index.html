@@ -21,8 +21,7 @@
             <img class="brand-logo" src="image.png" alt="Library logo" />
           </div>
           <div>
-            <p class="eyebrow">Lirary Portal</p>
-            <p class="brand-line">Navy, gold, and ivory library operations</p>
+            <p class="eyebrow">Library Portal</p>
           </div>
         </div>
         <p class="eyebrow">Library Admin Portal</p>
@@ -35,7 +34,7 @@
         <div class="hero-chips">
           <span class="hero-chip">Student Records</span>
           <span class="hero-chip">Fee Tracking</span>
-          <span class="hero-chip">Monthly Profit</span>
+          <span class="hero-chip">Monthly Profit/Lose</span>
         </div>
       </div>
 
@@ -222,10 +221,33 @@
       <section class="card admin-only" id="expenseTableSection">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Expense Ledger</p>
-            <h2>Expenses for selected month</h2>
+            <p class="eyebrow">Monthly Details</p>
+            <h2>Selected month breakdown</h2>
           </div>
-          <p class="section-note">Visible only to admin.</p>
+          <p class="section-note" id="monthlyBreakdownNote">Visible only to admin.</p>
+        </div>
+
+        <div class="month-detail-grid">
+          <article class="month-detail-card">
+            <span>Total expenses</span>
+            <strong id="detailExpenseTotal">PKR 0</strong>
+            <small>All expense entries recorded in the selected month</small>
+          </article>
+          <article class="month-detail-card">
+            <span>Total fee paid</span>
+            <strong id="detailFeePaidTotal">PKR 0</strong>
+            <small>Only paid student fees counted for the selected month</small>
+          </article>
+          <article class="month-detail-card">
+            <span>Students enrolled</span>
+            <strong id="detailEnrolledCount">0</strong>
+            <small>Students whose join date falls in the selected month</small>
+          </article>
+          <article class="month-detail-card accent" id="detailResultCard">
+            <span id="detailResultLabel">Monthly profit</span>
+            <strong id="detailResultValue">PKR 0</strong>
+            <small id="detailResultHint">Income minus expenses for the selected month</small>
+          </article>
         </div>
 
         <div class="table-wrap">

@@ -25,12 +25,20 @@ const elements = {
   expenseSubmitButton: document.querySelector('#expenseForm button[type="submit"]'),
   studentTableBody: document.getElementById("studentTableBody"),
   expenseTableBody: document.getElementById("expenseTableBody"),
+  monthlyBreakdownNote: document.getElementById("monthlyBreakdownNote"),
   totalStudents: document.getElementById("totalStudents"),
   paidStudents: document.getElementById("paidStudents"),
   pendingStudents: document.getElementById("pendingStudents"),
   monthlyIncome: document.getElementById("monthlyIncome"),
   monthlyExpense: document.getElementById("monthlyExpense"),
   monthlyProfit: document.getElementById("monthlyProfit"),
+  detailExpenseTotal: document.getElementById("detailExpenseTotal"),
+  detailFeePaidTotal: document.getElementById("detailFeePaidTotal"),
+  detailEnrolledCount: document.getElementById("detailEnrolledCount"),
+  detailResultCard: document.getElementById("detailResultCard"),
+  detailResultLabel: document.getElementById("detailResultLabel"),
+  detailResultValue: document.getElementById("detailResultValue"),
+  detailResultHint: document.getElementById("detailResultHint"),
   adminOnlySections: document.querySelectorAll(".admin-only"),
   adminRegistrationOnlyFields: document.querySelectorAll(".admin-registration-only"),
   studentRowTemplate: document.getElementById("studentRowTemplate"),
@@ -465,19 +473,14 @@ function renderRole() {
 }
 
 function renderSummary() {
-  const paidCount = state.payments.filter((entry) => entry.status === "paid").length;
-  const income = state.payments
-    .filter((entry) => entry.status === "paid")
-    .reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
-  const expenses = state.expenses.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
-  const profit = income - expenses;
+  const monthlyStats = getMonthlyStats();
 
   elements.totalStudents.textContent = String(state.students.length);
-  elements.paidStudents.textContent = String(paidCount);
-  elements.pendingStudents.textContent = String(Math.max(state.students.length - paidCount, 0));
-  elements.monthlyIncome.textContent = formatCurrency(income);
-  elements.monthlyExpense.textContent = formatCurrency(expenses);
-  elements.monthlyProfit.textContent = formatCurrency(profit);
+  elements.paidStudents.textContent = String(monthlyStats.paidCount);
+  elements.pendingStudents.textContent = String(Math.max(state.students.length - monthlyStats.paidCount, 0));
+  elements.monthlyIncome.textContent = formatCurrency(monthlyStats.income);
+  elements.monthlyExpense.textContent = formatCurrency(monthlyStats.expenses);
+  elements.monthlyProfit.textContent = formatCurrency(monthlyStats.result);
   elements.monthLabel.textContent = `Showing numbers for ${formatMonthLabel(state.selectedMonth)}`;
 }
 
@@ -529,6 +532,20 @@ function renderStudents() {
 }
 
 function renderExpenses() {
+  const monthlyStats = getMonthlyStats();
+  const hasProfit = monthlyStats.result >= 0;
+
+  elements.monthlyBreakdownNote.textContent = `Full breakdown for ${formatMonthLabel(state.selectedMonth)}.`;
+  elements.detailExpenseTotal.textContent = formatCurrency(monthlyStats.expenses);
+  elements.detailFeePaidTotal.textContent = formatCurrency(monthlyStats.income);
+  elements.detailEnrolledCount.textContent = String(monthlyStats.enrolledCount);
+  elements.detailResultCard.classList.toggle("loss", !hasProfit);
+  elements.detailResultLabel.textContent = hasProfit ? "Monthly profit" : "Monthly loss";
+  elements.detailResultValue.textContent = formatCurrency(Math.abs(monthlyStats.result));
+  elements.detailResultHint.textContent = hasProfit
+    ? "Selected month finished above expenses."
+    : "Selected month expenses are higher than collected fees.";
+
   if (state.expenses.length === 0) {
     elements.expenseTableBody.innerHTML =
       '<tr><td colspan="3" class="empty-state">No expenses recorded for this month.</td></tr>';
@@ -566,6 +583,21 @@ function resetPortalData() {
   state.students = [];
   state.payments = [];
   state.expenses = [];
+}
+
+function getMonthlyStats() {
+  const paidPayments = state.payments.filter((entry) => entry.status === "paid");
+  const income = paidPayments.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+  const expenses = state.expenses.reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+  const enrolledCount = state.students.filter((student) => isSameMonth(student.join_date, state.selectedMonth)).length;
+
+  return {
+    paidCount: paidPayments.length,
+    income,
+    expenses,
+    enrolledCount,
+    result: income - expenses,
+  };
 }
 
 function getPayment(studentId) {
@@ -606,6 +638,14 @@ function toDbMonthDate(monthValue) {
 
 function fromDbMonthDate(dateValue) {
   return String(dateValue).slice(0, 7);
+}
+
+function isSameMonth(dateValue, monthValue) {
+  if (!dateValue || !monthValue) {
+    return false;
+  }
+
+  return String(dateValue).slice(0, 7) === monthValue;
 }
 
 function formatCurrency(value) {

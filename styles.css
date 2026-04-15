@@ -327,7 +327,21 @@ select {
   gap: 16px;
 }
 
+.month-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
 .stat-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(244, 234, 213, 0.9));
+  border: 1px solid var(--line);
+}
+
+.month-detail-card {
   padding: 18px;
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(244, 234, 213, 0.9));
@@ -340,8 +354,21 @@ select {
   border-color: rgba(212, 176, 106, 0.22);
 }
 
+.month-detail-card.accent {
+  background: linear-gradient(145deg, rgba(37, 55, 104, 0.98), rgba(14, 24, 49, 0.98));
+  color: #f8f1e3;
+  border-color: rgba(212, 176, 106, 0.22);
+}
+
+.month-detail-card.loss {
+  background: linear-gradient(145deg, rgba(116, 41, 34, 0.96), rgba(64, 20, 18, 0.98));
+  color: #fff1ee;
+  border-color: rgba(176, 70, 54, 0.28);
+}
+
 .stat-card span,
-.finance-strip span {
+.finance-strip span,
+.month-detail-card span {
   display: block;
   font-size: 0.9rem;
   color: inherit;
@@ -349,14 +376,16 @@ select {
 }
 
 .stat-card strong,
-.finance-strip strong {
+.finance-strip strong,
+.month-detail-card strong {
   display: block;
   margin: 12px 0 6px;
   font-size: clamp(1.4rem, 3vw, 2.1rem);
   font-weight: 800;
 }
 
-.stat-card small {
+.stat-card small,
+.month-detail-card small {
   color: inherit;
   opacity: 0.78;
 }
@@ -572,6 +601,7 @@ th {
   }
 
   .stats-grid,
+  .month-detail-grid,
   .finance-strip,
   .form-grid,
   .compact-grid {
@@ -593,6 +623,7 @@ th {
   }
 
   .stats-grid,
+  .month-detail-grid,
   .finance-strip,
   .form-grid,
   .compact-grid {

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance - Library Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="appLayout" class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-lockup compact">
+          <div class="brand-logo-wrap">
+            <img class="brand-logo" src="image.png" alt="Library logo" />
+          </div>
+          <span>Library</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Students</span>
+        </a>
+        <a href="finance.html" class="nav-item active admin-only" id="financeNavItem">
+          <span class="nav-icon">💰</span>
+          <span class="nav-label">Finance</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div class="user-details">
+            <p class="user-email" id="sessionEmail">-</p>
+            <p class="user-role" id="sessionRoleLabel">-</p>
+          </div>
+        </div>
+        <button class="logout-btn" id="logoutButton">Log out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <div>
+            <h1>Finance Management</h1>
+            <p class="section-subtitle">Track expenses and profit</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <label class="month-selector">
+            <span>Month:</span>
+            <input id="reportMonth" name="reportMonth" type="month" />
+          </label>
+        </div>
+      </header>
+
+      <!-- FINANCE CONTENT -->
+      <section class="content-section active">
+        <div id="appMessage" class="app-message is-hidden" role="status" aria-live="polite"></div>
+
+        <!-- Record Expense -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h2>➕ Record Monthly Expense</h2>
+            <p class="form-section-subtitle">Add a new expense entry</p>
+          </div>
+
+          <form id="expenseForm" class="form-grid compact-grid">
+            <label class="input-group">
+              <span>Expense Title *</span>
+              <input id="expenseTitle" name="expenseTitle" type="text" placeholder="Electricity bill" required />
+            </label>
+
+            <label class="input-group">
+              <span>Amount *</span>
+              <input id="expenseAmount" name="expenseAmount" type="number" min="0" step="1" placeholder="12000" required />
+            </label>
+
+            <label class="input-group">
+              <span>Month *</span>
+              <input id="expenseMonth" name="expenseMonth" type="month" required />
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-btn alt" type="submit" id="expenseSubmitButton">Save Expense</button>
+              <p class="helper-text">Monthly profit calculated automatically</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Monthly Breakdown -->
+        <div class="breakdown-section">
+          <div class="breakdown-header">
+            <div class="breakdown-title">
+              <div class="breakdown-icon">📅</div>
+              <div>
+                <h2>Selected Month Breakdown</h2>
+                <p class="breakdown-subtitle">Financial details for <strong id="monthlyBreakdownNote">selected month</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="month-detail-grid">
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">💸</span>
+                <span class="detail-label">Expenses</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailExpenseTotal">PKR 0</strong>
+                <small>This month only</small>
+              </div>
+            </article>
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">💰</span>
+                <span class="detail-label">Fee Paid</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailFeePaidTotal">PKR 0</strong>
+                <small>Paid fees only</small>
+              </div>
+            </article>
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">👥</span>
+                <span class="detail-label">Enrolled</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailEnrolledCount">0</strong>
+                <small>New this month</small>
+              </div>
+            </article>
+            <article class="detail-card accent" id="detailResultCard">
+              <div class="detail-card-header">
+                <span class="detail-icon">📊</span>
+                <span class="detail-label" id="detailResultLabel">Profit</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailResultValue">PKR 0</strong>
+                <small id="detailResultHint">Income minus expenses</small>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="section-card">
+          <div class="card-header">
+            <h2>📊 Expense History</h2>
+            <p class="card-subtitle">All recorded expenses</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Month</th>
+                  <th>Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody">
+                <tr>
+                  <td colspan="4" class="empty-state">No expenses recorded</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Edit Expense Modal -->
+  <div id="editExpenseModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit Expense</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editExpenseForm" class="form-grid">
+          <input type="hidden" id="editExpenseId" name="expenseId" />
+          <label class="input-group">
+            <span>Expense Title *</span>
+            <input id="editExpenseTitle" name="expenseTitle" type="text" required />
+          </label>
+          <label class="input-group">
+            <span>Amount *</span>
+            <input id="editExpenseAmount" name="expenseAmount" type="number" required />
+          </label>
+          <label class="input-group">
+            <span>Month *</span>
+            <input id="editExpenseMonth" name="expenseMonth" type="month" required />
+          </label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn close-modal">Cancel</button>
+        <button class="primary-btn alt" type="submit" form="editExpenseForm" id="editExpenseSubmitBtn">Update Expense</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/finance.js"></script>
+</body>
+</html>

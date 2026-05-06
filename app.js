@@ -1,39 +1,56 @@
-const SUPABASE_URL = window.SUPABASE_CONFIG?.url;
-const SUPABASE_PUBLISHABLE_KEY = window.SUPABASE_CONFIG?.publishableKey;
+// This file has been replaced by modular JavaScript files
+// Please use index.html as the entry point
+
+// Redirect to new structure
+if (window.location.pathname.includes('app.js')) {
+  console.warn('app.js is deprecated. Please use index.html as entry point.');
+}
+
+// If someone loads this directly, redirect to login
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('loginScreen') && !document.getElementById('appLayout')) {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
 
 const elements = {
-  appMessage: document.getElementById("appMessage"),
-  authGate: document.getElementById("authGate"),
-  authGateText: document.getElementById("authGateText"),
+  loginScreen: document.getElementById("loginScreen"),
   appLayout: document.getElementById("appLayout"),
+  appMessage: document.getElementById("appMessage"),
+  
+  // Login
   loginForm: document.getElementById("loginForm"),
   loginEmail: document.getElementById("loginEmail"),
   loginPassword: document.getElementById("loginPassword"),
   loginButton: document.getElementById("loginButton"),
-  sessionCard: document.getElementById("sessionCard"),
+  
+  // Sidebar
+  sidebar: document.querySelector(".sidebar"),
+  navItems: document.querySelectorAll(".nav-item"),
   sessionEmail: document.getElementById("sessionEmail"),
   sessionRoleLabel: document.getElementById("sessionRoleLabel"),
   logoutButton: document.getElementById("logoutButton"),
-  loggedInOnly: document.querySelectorAll(".logged-in-only"),
-  accessNote: document.getElementById("accessNote"),
-  registrationHelp: document.getElementById("registrationHelp"),
-  monthlyStudentNote: document.getElementById("monthlyStudentNote"),
+  
+  // Header
+  sectionTitle: document.getElementById("sectionTitle"),
+  sectionSubtitle: document.getElementById("sectionSubtitle"),
   reportMonth: document.getElementById("reportMonth"),
-  monthLabel: document.getElementById("monthLabel"),
-  studentForm: document.getElementById("studentForm"),
-  studentSubmitButton: document.querySelector('#studentForm button[type="submit"]'),
-  expenseForm: document.getElementById("expenseForm"),
-  expenseSubmitButton: document.querySelector('#expenseForm button[type="submit"]'),
-  studentTableBody: document.getElementById("studentTableBody"),
-  allStudentTableBody: document.getElementById("allStudentTableBody"),
-  expenseTableBody: document.getElementById("expenseTableBody"),
-  monthlyBreakdownNote: document.getElementById("monthlyBreakdownNote"),
+  backButton: document.getElementById("backButton"),
+  
+  // Dashboard Section
+  dashboardSection: document.getElementById("dashboardSection"),
   totalStudents: document.getElementById("totalStudents"),
   paidStudents: document.getElementById("paidStudents"),
   pendingStudents: document.getElementById("pendingStudents"),
+  monthlyProfit: document.getElementById("monthlyProfit"),
+  monthLabel: document.getElementById("monthLabel"),
   monthlyIncome: document.getElementById("monthlyIncome"),
   monthlyExpense: document.getElementById("monthlyExpense"),
-  monthlyProfit: document.getElementById("monthlyProfit"),
+  monthlyDetailsCard: document.getElementById("monthlyDetailsCard"),
+  monthlyBreakdownNote: document.getElementById("monthlyBreakdownNote"),
   detailExpenseTotal: document.getElementById("detailExpenseTotal"),
   detailFeePaidTotal: document.getElementById("detailFeePaidTotal"),
   detailEnrolledCount: document.getElementById("detailEnrolledCount"),
@@ -41,14 +58,43 @@ const elements = {
   detailResultLabel: document.getElementById("detailResultLabel"),
   detailResultValue: document.getElementById("detailResultValue"),
   detailResultHint: document.getElementById("detailResultHint"),
-  adminOnlySections: document.querySelectorAll(".admin-only"),
-  adminRegistrationOnlyFields: document.querySelectorAll(".admin-registration-only"),
-  studentRowTemplate: document.getElementById("studentRowTemplate"),
-  allStudentRowTemplate: document.getElementById("allStudentRowTemplate"),
+  financeNavCard: document.getElementById("financeNavCard"),
+  
+  // Students Section
+  studentsSection: document.getElementById("studentsSection"),
+  studentForm: document.getElementById("studentForm"),
+  studentSubmitButton: document.querySelector('#studentForm button[type="submit"]'),
+  registrationHelp: document.getElementById("registrationHelp"),
+  studentTableBody: document.getElementById("studentTableBody"),
+  monthlyStudentNote: document.getElementById("monthlyStudentNote"),
+  allStudentTableBody: document.getElementById("allStudentTableBody"),
+  
+  // Finance Section
+  financeSection: document.getElementById("financeSection"),
+  expenseForm: document.getElementById("expenseForm"),
+  expenseSubmitButton: document.querySelector('#expenseForm button[type="submit"]'),
+  expenseTableBody: document.getElementById("expenseTableBody"),
+  
+  // Form fields
+  studentName: document.getElementById("studentName"),
+  studentPhone: document.getElementById("studentPhone"),
+  studentCourse: document.getElementById("studentCourse"),
+  studentFee: document.getElementById("studentFee"),
   joinDate: document.getElementById("joinDate"),
   feeMonth: document.getElementById("feeMonth"),
   feeStatus: document.getElementById("feeStatus"),
+  
+  expenseTitle: document.getElementById("expenseTitle"),
+  expenseAmount: document.getElementById("expenseAmount"),
   expenseMonth: document.getElementById("expenseMonth"),
+  
+  // Templates
+  studentRowTemplate: document.getElementById("studentRowTemplate"),
+  allStudentRowTemplate: document.getElementById("allStudentRowTemplate"),
+  
+  // Query selectors for dynamic classes
+  adminOnlySections: document.querySelectorAll(".admin-only"),
+  adminRegistrationOnlyFields: document.querySelectorAll(".admin-registration-only"),
 };
 
 const today = new Date();
@@ -79,15 +125,51 @@ function bootstrapDefaults() {
 }
 
 function bindEvents() {
+  // Login
   elements.loginForm.addEventListener("submit", (event) => {
     event.preventDefault();
     void handleLogin();
   });
 
+  // Logout
   elements.logoutButton.addEventListener("click", () => {
     void handleLogout();
   });
 
+  // Navigation items (sidebar)
+  elements.navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      const section = item.dataset.section;
+      switchSection(section);
+      
+      // Update active nav item
+      elements.navItems.forEach((nav) => nav.classList.remove("active"));
+      item.classList.add("active");
+    });
+  });
+
+  // Navigation cards (dashboard)
+  document.querySelectorAll(".nav-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const section = card.dataset.section;
+      switchSection(section);
+      
+      // Update active nav item in sidebar
+      elements.navItems.forEach((nav) => nav.classList.remove("active"));
+      const mainNavItem = document.querySelector('[data-section="dashboard"]');
+      if (mainNavItem) mainNavItem.classList.add("active");
+    });
+  });
+
+  // Back button
+  elements.backButton.addEventListener("click", () => {
+    switchSection("dashboard");
+    elements.navItems.forEach((nav) => nav.classList.remove("active"));
+    const dashboardItem = document.querySelector('[data-section="dashboard"]');
+    if (dashboardItem) dashboardItem.classList.add("active");
+  });
+
+  // Month selector
   elements.reportMonth.addEventListener("change", (event) => {
     state.selectedMonth = event.target.value || currentMonth;
     elements.feeMonth.value = state.selectedMonth;
@@ -418,23 +500,13 @@ function render() {
   const hasSession = Boolean(state.user);
   const hasAccess = Boolean(state.user && state.role);
 
-  elements.loginForm.classList.toggle("is-hidden", hasSession);
-  elements.sessionCard.classList.toggle("is-hidden", !hasSession);
-  elements.loggedInOnly.forEach((element) => {
-    element.classList.toggle("is-hidden", !hasSession);
-  });
+  // Show/hide login screen vs dashboard
+  elements.loginScreen.classList.toggle("is-hidden", hasAccess);
   elements.appLayout.classList.toggle("is-hidden", !hasAccess);
-  elements.authGate.classList.toggle("is-hidden", hasAccess);
-
-  if (!hasSession) {
-    elements.authGateText.textContent = "Sign in to open the library portal.";
-  } else if (!state.role) {
-    elements.authGateText.textContent = "This login works, but the account has no role assigned in user_roles.";
-  }
 
   if (hasSession) {
     elements.sessionEmail.textContent = state.user.email || "Unknown user";
-    elements.sessionRoleLabel.textContent = `Role: ${capitalize(state.role || "pending setup")}`;
+    elements.sessionRoleLabel.textContent = capitalize(state.role || "pending setup");
   }
 
   renderRole();
@@ -444,35 +516,74 @@ function render() {
   renderExpenses();
 }
 
+function switchSection(sectionName) {
+  // Hide all sections
+  document.querySelectorAll(".content-section").forEach((section) => {
+    section.classList.remove("active");
+  });
+
+  // Show selected section
+  let section = null;
+  let title = "";
+  let subtitle = "";
+  let showBackButton = false;
+
+  switch (sectionName) {
+    case "dashboard":
+      section = elements.dashboardSection;
+      title = "Dashboard";
+      subtitle = "Overview of your library";
+      showBackButton = false;
+      break;
+    case "students":
+      section = elements.studentsSection;
+      title = "Student Management";
+      subtitle = "Register and manage students";
+      showBackButton = true;
+      break;
+    case "finance":
+      section = elements.financeSection;
+      title = "Finance Management";
+      subtitle = "Track expenses and profit";
+      showBackButton = true;
+      break;
+  }
+
+  if (section) {
+    section.classList.add("active");
+    elements.sectionTitle.textContent = title;
+    elements.sectionSubtitle.textContent = subtitle;
+    elements.backButton.classList.toggle("show", showBackButton);
+  }
+}
+
 function renderRole() {
   const isAdmin = state.role === "admin";
 
+  // Show/hide admin-only sections
+  elements.monthlyDetailsCard?.classList.toggle("show", isAdmin);
+  elements.financeSection?.classList.toggle("show", isAdmin);
+  
+  // Show nav card for finance section
+  const financeNavCard = document.getElementById("financeNavCard");
+  if (financeNavCard) {
+    financeNavCard.classList.toggle("show", isAdmin);
+  }
+  
+  // Show nav item for finance section (if exists)
+  const financeNavItem = document.querySelector('[data-section="finance"]');
+  if (financeNavItem) {
+    financeNavItem.classList.toggle("show", isAdmin);
+  }
+
+  // Show/hide admin-only form fields
   elements.adminOnlySections.forEach((section) => {
-    section.classList.toggle("is-hidden", !isAdmin);
+    section.classList.toggle("show", isAdmin);
   });
 
   elements.adminRegistrationOnlyFields.forEach((field) => {
-    field.classList.toggle("is-hidden", !isAdmin);
-    field.querySelectorAll("input, select").forEach((control) => {
-      control.disabled = !isAdmin;
-      control.required = isAdmin;
-    });
+    field.classList.toggle("show", isAdmin);
   });
-
-  if (state.role === "admin") {
-    elements.accessNote.textContent =
-      "Admin can register students, update fee status, manage expenses, and review monthly profit.";
-    elements.registrationHelp.textContent =
-      "Admin can register students and also save the first month fee status during registration.";
-  } else if (state.role === "manager") {
-    elements.accessNote.textContent =
-      "Manager can only register students. Financial sections and fee status actions stay with admin.";
-    elements.registrationHelp.textContent =
-      "Manager can register students only. Fee status, expense entry, and monthly profit are hidden.";
-  } else {
-    elements.accessNote.textContent = "";
-    elements.registrationHelp.textContent = "Sign in with a valid role to continue.";
-  }
 }
 
 function renderSummary() {

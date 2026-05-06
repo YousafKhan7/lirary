@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #0a1329 0%, #f8f0e1 100%);
+      color: #fff;
+      text-align: center;
+    }
+    .message {
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    h1 { margin: 0 0 20px; }
+    p { margin: 10px 0; }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #d4b06a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="message">
+    <h1>🔄 Updating to New Dashboard</h1>
+    <div class="spinner"></div>
+    <p>Redirecting to the new professional dashboard...</p>
+    <p><small>If not redirected, <a href="index.html" style="color: #d4b06a;">click here</a></small></p>
+  </div>
+  
+  <script>
+    // Redirect to login page after 2 seconds
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 2000);
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Library Management Portal</title>
+  <title>Login - Library Management Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -13,9 +13,10 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page-shell">
-    <header class="hero">
-      <div class="hero-copy">
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-container">
+      <div class="login-hero">
         <div class="brand-lockup">
           <div class="brand-logo-wrap">
             <img class="brand-logo" src="image.png" alt="Library logo" />
@@ -24,337 +25,40 @@
             <p class="eyebrow">Library Portal</p>
           </div>
         </div>
-        <p class="eyebrow">Library Admin Portal</p>
-        <h1>Simple student registration, fee tracking, and monthly profit in one screen.</h1>
-      
-
+        <p class="eyebrow">Library Management System</p>
+        <h1>Manage students, track fees, and monitor profits</h1>
         <div class="hero-chips">
-          <span class="hero-chip">Student Records</span>
-          <span class="hero-chip">Fee Tracking</span>
-          <span class="hero-chip">Monthly Profit/Lose</span>
+          <span class="hero-chip">📚 Student Records</span>
+          <span class="hero-chip">💳 Fee Tracking</span>
+          <span class="hero-chip">📊 Monthly Profit</span>
         </div>
       </div>
 
-      <div class="hero-panel">
+      <form id="loginForm" class="login-form">
         <div id="appMessage" class="app-message is-hidden" role="status" aria-live="polite"></div>
-
-        <form id="loginForm" class="auth-form">
-          <div class="section-heading compact-heading">
-            <div>
-              <p class="eyebrow">Sign In</p>
-              <h2>Access the portal</h2>
-            </div>
-           
-          </div>
-
-          <label class="input-group">
-            <span>Email</span>
-            <input id="loginEmail" name="loginEmail" type="email" placeholder="admin@lirary.com" required />
-          </label>
-
-          <label class="input-group">
-            <span>Password</span>
-            <input id="loginPassword" name="loginPassword" type="password" placeholder="Enter password" required />
-          </label>
-
-          <button class="primary-btn" id="loginButton" type="submit">Sign in</button>
-        </form>
-
-        <div id="sessionCard" class="session-card is-hidden">
-          <div>
-            <span class="session-label">Signed in as</span>
-            <strong id="sessionEmail">-</strong>
-            <p class="section-note" id="sessionRoleLabel">Role: -</p>
-          </div>
-          <button class="ghost-btn" id="logoutButton" type="button">Log out</button>
+        
+        <div class="form-header">
+          <h2>Sign In</h2>
+          <p>Access your library portal</p>
         </div>
 
-        <label class="input-group compact logged-in-only is-hidden">
-          <span>Monthly report</span>
-          <input id="reportMonth" name="reportMonth" type="month" />
+        <label class="input-group">
+          <span>Email</span>
+          <input id="loginEmail" name="loginEmail" type="email" placeholder="admin@library.com" required />
         </label>
 
-        <div class="access-note logged-in-only is-hidden" id="accessNote"></div>
-       
-      </div>
-    </header>
+        <label class="input-group">
+          <span>Password</span>
+          <input id="loginPassword" name="loginPassword" type="password" placeholder="Enter password" required />
+        </label>
 
-    <section id="authGate" class="auth-gate">
-      <p id="authGateText">Sign in to open the library portal.</p>
-    </section>
-
-    <main id="appLayout" class="layout is-hidden">
-      <section class="summary-panel admin-only">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Overview</p>
-            <h2>Overall dashboard</h2>
-          </div>
-          <p class="section-note" id="monthLabel"></p>
-        </div>
-
-        <div class="stats-grid">
-          <article class="stat-card">
-            <span>Total students overall</span>
-            <strong id="totalStudents">0</strong>
-            <small>All students registered in the system</small>
-          </article>
-          <article class="stat-card">
-            <span>Students active in month</span>
-            <strong id="paidStudents">0</strong>
-            <small>Students who had already joined by the selected month</small>
-          </article>
-          <article class="stat-card">
-            <span>Students enrolled in month</span>
-            <strong id="pendingStudents">0</strong>
-            <small>Students whose join date falls in the selected month</small>
-          </article>
-          <article class="stat-card accent">
-            <span>Overall profit / loss</span>
-            <strong id="monthlyProfit">PKR 0</strong>
-            <small>All-time collected fees minus all-time expenses</small>
-          </article>
-        </div>
-
-        <div class="finance-strip">
-          <article>
-            <span>Total fee paid overall</span>
-            <strong id="monthlyIncome">PKR 0</strong>
-          </article>
-          <article>
-            <span>Total expenses overall</span>
-            <strong id="monthlyExpense">PKR 0</strong>
-          </article>
-        </div>
-      </section>
-
-      <section class="card" aria-labelledby="studentFormTitle">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Registration</p>
-            <h2 id="studentFormTitle">Register a student</h2>
-          </div>
-          <p class="section-note" id="registrationHelp">Admin and manager can register students.</p>
-        </div>
-
-        <form id="studentForm" class="form-grid">
-          <label class="input-group">
-            <span>Student name</span>
-            <input id="studentName" name="studentName" type="text" placeholder="Ayesha Khan" required />
-          </label>
-
-          <label class="input-group">
-            <span>Phone number</span>
-            <input id="studentPhone" name="studentPhone" type="tel" placeholder="03xx-xxxxxxx" required />
-          </label>
-
-          <label class="input-group">
-            <span>Course / class</span>
-            <input id="studentCourse" name="studentCourse" type="text" placeholder="CSS, English, FSC" required />
-          </label>
-
-          <label class="input-group">
-            <span>Monthly fee</span>
-            <input id="studentFee" name="studentFee" type="number" min="0" step="1" placeholder="5000" required />
-          </label>
-
-          <label class="input-group">
-            <span>Join date</span>
-            <input id="joinDate" name="joinDate" type="date" required />
-          </label>
-
-          <label class="input-group admin-registration-only">
-            <span>Fee month</span>
-            <input id="feeMonth" name="feeMonth" type="month" required />
-          </label>
-
-          <label class="input-group admin-registration-only">
-            <span>Fee status</span>
-            <select id="feeStatus" name="feeStatus" required>
-              <option value="pending">Pending</option>
-              <option value="paid">Paid</option>
-            </select>
-          </label>
-
-          <div class="form-actions">
-            <button class="primary-btn" type="submit">Register student</button>
-            <p class="helper-text">A unique student ID is generated automatically.</p>
-          </div>
-        </form>
-      </section>
-
-      <section class="card admin-only" id="expensesSection" aria-labelledby="expenseFormTitle">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Admin Finance</p>
-            <h2 id="expenseFormTitle">Record a monthly expense</h2>
-          </div>
-          <p class="section-note">Only the admin can manage expenses and profit.</p>
-        </div>
-
-        <form id="expenseForm" class="form-grid compact-grid">
-          <label class="input-group">
-            <span>Expense title</span>
-            <input id="expenseTitle" name="expenseTitle" type="text" placeholder="Electricity bill" required />
-          </label>
-
-          <label class="input-group">
-            <span>Amount</span>
-            <input id="expenseAmount" name="expenseAmount" type="number" min="0" step="1" placeholder="12000" required />
-          </label>
-
-          <label class="input-group">
-            <span>Expense month</span>
-            <input id="expenseMonth" name="expenseMonth" type="month" required />
-          </label>
-
-          <div class="form-actions">
-            <button class="primary-btn alt" type="submit">Save expense</button>
-            <p class="helper-text">Monthly profit is calculated automatically.</p>
-          </div>
-        </form>
-      </section>
-
-      <section class="card wide-card admin-only" id="expenseTableSection">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Monthly Details</p>
-            <h2>Selected month breakdown</h2>
-          </div>
-          <p class="section-note" id="monthlyBreakdownNote">Visible only to admin.</p>
-        </div>
-
-        <div class="month-detail-grid">
-          <article class="month-detail-card">
-            <span>Total expenses</span>
-            <strong id="detailExpenseTotal">PKR 0</strong>
-            <small>All expense entries recorded in the selected month</small>
-          </article>
-          <article class="month-detail-card">
-            <span>Total fee paid</span>
-            <strong id="detailFeePaidTotal">PKR 0</strong>
-            <small>Only paid student fees counted for the selected month</small>
-          </article>
-          <article class="month-detail-card">
-            <span>Students enrolled</span>
-            <strong id="detailEnrolledCount">0</strong>
-            <small>Students whose join date falls in the selected month</small>
-          </article>
-          <article class="month-detail-card accent" id="detailResultCard">
-            <span id="detailResultLabel">Monthly profit</span>
-            <strong id="detailResultValue">PKR 0</strong>
-            <small id="detailResultHint">Income minus expenses for the selected month</small>
-          </article>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Month</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody id="expenseTableBody">
-              <tr>
-                <td colspan="3" class="empty-state">No expenses recorded yet.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card students-card">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Students</p>
-            <h2>Students visible in selected month</h2>
-          </div>
-          <p class="section-note" id="monthlyStudentNote">
-            Students appear here only if they had already joined by the selected month.
-          </p>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Phone</th>
-                <th>Monthly fee</th>
-                <th>Fee status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="studentTableBody">
-              <tr>
-                <td colspan="7" class="empty-state">No students available for this month yet.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card students-card">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">All Students</p>
-            <h2>Total registered student list</h2>
-          </div>
-          <p class="section-note">This list shows every student ever registered in the portal.</p>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Phone</th>
-                <th>Join date</th>
-                <th>Monthly fee</th>
-              </tr>
-            </thead>
-            <tbody id="allStudentTableBody">
-              <tr>
-                <td colspan="6" class="empty-state">No students registered yet.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+        <button class="primary-btn" id="loginButton" type="submit">Sign in</button>
+      </form>
+    </div>
   </div>
-
-  <template id="studentRowTemplate">
-    <tr>
-      <td data-field="id"></td>
-      <td data-field="name"></td>
-      <td data-field="course"></td>
-      <td data-field="phone"></td>
-      <td data-field="monthlyFee"></td>
-      <td data-field="status"></td>
-      <td data-field="action"></td>
-    </tr>
-  </template>
-
-  <template id="allStudentRowTemplate">
-    <tr>
-      <td data-field="id"></td>
-      <td data-field="name"></td>
-      <td data-field="course"></td>
-      <td data-field="phone"></td>
-      <td data-field="joinDate"></td>
-      <td data-field="monthlyFee"></td>
-    </tr>
-  </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="app.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Students - Library Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="appLayout" class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-lockup compact">
+          <div class="brand-logo-wrap">
+            <img class="brand-logo" src="image.png" alt="Library logo" />
+          </div>
+          <span>Library</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="students.html" class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Students</span>
+        </a>
+        <a href="finance.html" class="nav-item admin-only" id="financeNavItem">
+          <span class="nav-icon">💰</span>
+          <span class="nav-label">Finance</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div class="user-details">
+            <p class="user-email" id="sessionEmail">-</p>
+            <p class="user-role" id="sessionRoleLabel">-</p>
+          </div>
+        </div>
+        <button class="logout-btn" id="logoutButton">Log out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <div>
+            <h1>Student Management</h1>
+            <p class="section-subtitle">Register and manage students</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <label class="month-selector">
+            <span>Month:</span>
+            <input id="reportMonth" name="reportMonth" type="month" />
+          </label>
+        </div>
+      </header>
+
+      <!-- STUDENTS CONTENT -->
+      <section class="content-section active">
+        <div id="appMessage" class="app-message is-hidden" role="status" aria-live="polite"></div>
+
+        <!-- Registration Form -->
+        <div class="form-section">
+          <div class="form-section-header">
+            <h2>➕ Register New Student</h2>
+            <p class="form-section-subtitle" id="registrationHelp">Add a new student to the system</p>
+          </div>
+
+          <form id="studentForm" class="form-grid">
+            <label class="input-group">
+              <span>Student Name *</span>
+              <input id="studentName" name="studentName" type="text" placeholder="Ayesha Khan" required />
+            </label>
+
+            <label class="input-group">
+              <span>Father Name *</span>
+              <input id="fatherName" name="fatherName" type="text" placeholder="Muhammad Khan" required />
+            </label>
+
+            <label class="input-group">
+              <span>Phone Number *</span>
+              <input id="studentPhone" name="studentPhone" type="tel" placeholder="03xx-xxxxxxx" required />
+            </label>
+
+            <label class="input-group">
+              <span>Course / Class *</span>
+              <input id="studentCourse" name="studentCourse" type="text" placeholder="CSS, English, FSC" required />
+            </label>
+
+            <label class="input-group full-width">
+              <span>Address *</span>
+              <textarea id="studentAddress" name="studentAddress" rows="3" placeholder="Enter complete address" required></textarea>
+            </label>
+
+            <label class="input-group">
+              <span>Monthly Fee *</span>
+              <input id="studentFee" name="studentFee" type="number" min="0" step="1" placeholder="5000" required />
+            </label>
+
+            <label class="input-group">
+              <span>Join Date *</span>
+              <input id="joinDate" name="joinDate" type="date" required />
+            </label>
+
+            <label class="input-group admin-registration-only">
+              <span>Fee Month *</span>
+              <input id="feeMonth" name="feeMonth" type="month" required />
+            </label>
+
+            <label class="input-group admin-registration-only">
+              <span>Fee Status *</span>
+              <select id="feeStatus" name="feeStatus" required>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+              </select>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-btn" type="submit" id="studentSubmitButton">Register Student</button>
+              <p class="helper-text">Unique student ID generated automatically</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Monthly Students -->
+        <div class="section-card">
+          <div class="card-header">
+            <h2>📋 Students This Month</h2>
+            <p class="card-subtitle" id="monthlyStudentNote">Active students in selected month</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Father Name</th>
+                  <th>Course</th>
+                  <th>Phone</th>
+                  <th>Fee</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody">
+                <tr>
+                  <td colspan="8" class="empty-state">No students this month</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- All Students -->
+        <div class="section-card">
+          <div class="card-header">
+            <h2>📚 All Registered Students</h2>
+            <p class="card-subtitle">Complete student directory</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Father Name</th>
+                  <th>Course</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>Join Date</th>
+                  <th>Fee</th>
+                </tr>
+              </thead>
+              <tbody id="allStudentTableBody">
+                <tr>
+                  <td colspan="8" class="empty-state">No students registered yet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Templates -->
+  <template id="studentRowTemplate">
+    <tr>
+      <td data-field="id"></td>
+      <td data-field="name"></td>
+      <td data-field="fatherName"></td>
+      <td data-field="course"></td>
+      <td data-field="phone"></td>
+      <td data-field="monthlyFee"></td>
+      <td data-field="status"></td>
+      <td>
+        <div class="action-buttons" data-field="action"></div>
+      </td>
+    </tr>
+  </template>
+
+  <template id="allStudentRowTemplate">
+    <tr>
+      <td data-field="id"></td>
+      <td data-field="name"></td>
+      <td data-field="fatherName"></td>
+      <td data-field="course"></td>
+      <td data-field="phone"></td>
+      <td data-field="address"></td>
+      <td data-field="joinDate"></td>
+      <td data-field="monthlyFee"></td>
+      <td>
+        <div class="action-buttons" data-field="action"></div>
+      </td>
+    </tr>
+  </template>
+
+  <!-- View Student Modal -->
+  <div id="viewStudentModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Student Details</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid" id="studentDetailContent">
+          <!-- Content injected via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn close-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Student Modal -->
+  <div id="editStudentModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Edit Student Info</h2>
+        <button class="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editStudentForm" class="form-grid">
+          <input type="hidden" id="editStudentId" name="studentId" />
+          <label class="input-group">
+            <span>Student Name *</span>
+            <input id="editStudentName" name="studentName" type="text" required />
+          </label>
+          <label class="input-group">
+            <span>Father Name *</span>
+            <input id="editFatherName" name="fatherName" type="text" required />
+          </label>
+          <label class="input-group">
+            <span>Phone Number *</span>
+            <input id="editStudentPhone" name="studentPhone" type="tel" required />
+          </label>
+          <label class="input-group">
+            <span>Course / Class *</span>
+            <input id="editStudentCourse" name="studentCourse" type="text" required />
+          </label>
+          <label class="input-group full-width">
+            <span>Address *</span>
+            <textarea id="editStudentAddress" name="studentAddress" rows="2" required></textarea>
+          </label>
+          <label class="input-group">
+            <span>Monthly Fee *</span>
+            <input id="editStudentFee" name="studentFee" type="number" required />
+          </label>
+          <label class="input-group">
+            <span>Join Date *</span>
+            <input id="editJoinDate" name="joinDate" type="date" required />
+          </label>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn close-modal">Cancel</button>
+        <button class="primary-btn" type="submit" form="editStudentForm" id="editStudentSubmitBtn">Update Student</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/students.js"></script>
+</body>
+</html>

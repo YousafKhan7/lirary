@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Library Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="appLayout" class="dashboard-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-lockup compact">
+          <div class="brand-logo-wrap">
+            <img class="brand-logo" src="image.png" alt="Library logo" />
+          </div>
+          <span>Library</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="students.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Students</span>
+        </a>
+        <a href="finance.html" class="nav-item admin-only" id="financeNavItem">
+          <span class="nav-icon">💰</span>
+          <span class="nav-label">Finance</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">👤</div>
+          <div class="user-details">
+            <p class="user-email" id="sessionEmail">-</p>
+            <p class="user-role" id="sessionRoleLabel">-</p>
+          </div>
+        </div>
+        <button class="logout-btn" id="logoutButton">Log out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="section-subtitle">Overview of your library</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <label class="month-selector">
+            <span>Month:</span>
+            <input id="reportMonth" name="reportMonth" type="month" />
+          </label>
+        </div>
+      </header>
+
+      <!-- DASHBOARD CONTENT -->
+      <section class="content-section active">
+        <div id="appMessage" class="app-message is-hidden" role="status" aria-live="polite"></div>
+
+        <!-- Overview Stats -->
+        <div class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+              <span>Total Students</span>
+              <strong id="totalStudents">0</strong>
+              <small>All time</small>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <span>Active This Month</span>
+              <strong id="paidStudents">0</strong>
+              <small>Already joined</small>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">🆕</div>
+            <div class="stat-content">
+              <span>New This Month</span>
+              <strong id="pendingStudents">0</strong>
+              <small>New enrollments</small>
+            </div>
+          </article>
+          <article class="stat-card accent">
+            <div class="stat-icon">💵</div>
+            <div class="stat-content">
+              <span>Overall Profit</span>
+              <strong id="monthlyProfit">PKR 0</strong>
+              <small>All-time</small>
+            </div>
+          </article>
+        </div>
+
+        <!-- Finance Summary -->
+        <div class="finance-cards">
+          <article class="finance-card">
+            <span class="finance-icon">💵</span>
+            <div class="finance-content">
+              <span>Total Fee Collected</span>
+              <strong id="monthlyIncome">PKR 0</strong>
+              <small>All-time fees</small>
+            </div>
+          </article>
+          <article class="finance-card">
+            <span class="finance-icon">💸</span>
+            <div class="finance-content">
+              <span>Total Expenses</span>
+              <strong id="monthlyExpense">PKR 0</strong>
+              <small>All-time expenses</small>
+            </div>
+          </article>
+        </div>
+
+        <!-- Quick Navigation Cards -->
+        <div class="quick-nav-grid">
+          <a href="students.html" class="nav-card" style="text-decoration: none;">
+            <div class="nav-card-icon">👥</div>
+            <div class="nav-card-content">
+              <h3>Student Management</h3>
+              <p>Register and manage students</p>
+            </div>
+            <div class="nav-card-arrow">→</div>
+          </a>
+          <a href="finance.html" class="nav-card admin-only" id="financeNavCard" style="text-decoration: none;">
+            <div class="nav-card-icon">💰</div>
+            <div class="nav-card-content">
+              <h3>Finance Management</h3>
+              <p>Track expenses and profit</p>
+            </div>
+            <div class="nav-card-arrow">→</div>
+          </a>
+        </div>
+
+        <!-- Monthly Details (Admin Only) -->
+        <div class="breakdown-section admin-only" id="monthlyDetailsCard">
+          <div class="breakdown-header">
+            <div class="breakdown-title">
+              <div class="breakdown-icon">📅</div>
+              <div>
+                <h2>Selected Month Breakdown</h2>
+                <p class="breakdown-subtitle">Financial details for <strong id="selectedMonthDisplay">May 2026</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="month-detail-grid">
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">💸</span>
+                <span class="detail-label">Expenses</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailExpenseTotal">Rs 0</strong>
+                <small>This month only</small>
+              </div>
+            </article>
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">💰</span>
+                <span class="detail-label">Fee Paid</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailFeePaidTotal">Rs 0</strong>
+                <small>Paid fees only</small>
+              </div>
+            </article>
+            <article class="detail-card">
+              <div class="detail-card-header">
+                <span class="detail-icon">👥</span>
+                <span class="detail-label">Enrolled</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailEnrolledCount">0</strong>
+                <small>New this month</small>
+              </div>
+            </article>
+            <article class="detail-card accent" id="detailResultCard">
+              <div class="detail-card-header">
+                <span class="detail-icon">📊</span>
+                <span class="detail-label" id="detailResultLabel">Profit</span>
+              </div>
+              <div class="detail-card-content">
+                <strong id="detailResultValue">Rs 0</strong>
+                <small id="detailResultHint">Income minus expenses</small>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
